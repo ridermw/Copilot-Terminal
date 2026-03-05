@@ -1,0 +1,18 @@
+{
+    "server": {
+        "port": 19532,
+        "autoStart": true
+    },
+    "context": {
+        "includeHistory": true,
+        "historyCount": 5,
+        "includeLastOutput": true,
+        "includeGitInfo": true,
+        "includeOsInfo": true
+    },
+    "copilot": {
+        "model": "",
+        "extraArgs": [],
+        "autoApproveTools": false
+    }
+}
