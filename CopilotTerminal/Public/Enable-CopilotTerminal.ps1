@@ -36,11 +36,10 @@ function Enable-CopilotTerminal {
                 $approveTools = $script:_copilotApproveTools
                 [Microsoft.PowerShell.PSConsoleReadLine]::RevertLine()
                 [Microsoft.PowerShell.PSConsoleReadLine]::AcceptLine()
+                [Console]::WriteLine()
                 if ($approveTools) {
-                    Write-Host "copilot! {multiline}"
                     Invoke-CopilotQuery -Question $question -ApproveTools
                 } else {
-                    Write-Host "copilot: {multiline}"
                     Invoke-CopilotQuery -Question $question
                 }
             } else {
@@ -69,9 +68,14 @@ function Enable-CopilotTerminal {
         # --- Agent mode: copilot! <question> ---
         if ($line -match '^copilot!\s*(.+)$') {
             $question = $Matches[1]
+            $savedTop = [Console]::CursorTop
+            $savedLeft = [Console]::CursorLeft
             [Microsoft.PowerShell.PSConsoleReadLine]::RevertLine()
             [Microsoft.PowerShell.PSConsoleReadLine]::AcceptLine()
-            Write-Host "copilot! $question"
+            # Restore the original text on its line
+            [Console]::SetCursorPosition(0, $savedTop)
+            [Console]::Write("copilot! $question")
+            [Console]::WriteLine()
             Invoke-CopilotQuery -Question $question -ApproveTools
             return
         }
@@ -79,9 +83,14 @@ function Enable-CopilotTerminal {
         # --- Q&A mode: copilot: <question> ---
         if ($line -match '^copilot:\s*(.+)$') {
             $question = $Matches[1]
+            $savedTop = [Console]::CursorTop
+            $savedLeft = [Console]::CursorLeft
             [Microsoft.PowerShell.PSConsoleReadLine]::RevertLine()
             [Microsoft.PowerShell.PSConsoleReadLine]::AcceptLine()
-            Write-Host "copilot: $question"
+            # Restore the original text on its line
+            [Console]::SetCursorPosition(0, $savedTop)
+            [Console]::Write("copilot: $question")
+            [Console]::WriteLine()
             Invoke-CopilotQuery -Question $question
             return
         }
