@@ -1,5 +1,7 @@
-$modulePath = Join-Path $PSScriptRoot '..' 'CopilotTerminal.psd1'
-Import-Module $modulePath -Force
+BeforeAll {
+    $modulePath = Join-Path $PSScriptRoot '..' 'CopilotTerminal.psd1'
+    Import-Module $modulePath -Force
+}
 
 Describe 'ACP Message Building' {
     It 'Send-AcpMessage creates valid JSON-RPC 2.0' {
@@ -14,10 +16,10 @@ Describe 'ACP Message Building' {
         }
         $json = $msg | ConvertTo-Json -Depth 20 -Compress
         $parsed = $json | ConvertFrom-Json
-        $parsed.jsonrpc | Should Be '2.0'
-        $parsed.id | Should Be 1
-        $parsed.method | Should Be 'initialize'
-        $parsed.params.protocolVersion | Should Be '2025-01'
+        $parsed.jsonrpc | Should -Be '2.0'
+        $parsed.id | Should -Be 1
+        $parsed.method | Should -Be 'initialize'
+        $parsed.params.protocolVersion | Should -Be '2025-01'
     }
 
     It 'Session prompt message has correct structure' {
@@ -35,10 +37,10 @@ Describe 'ACP Message Building' {
         }
         $json = $msg | ConvertTo-Json -Depth 20 -Compress
         $parsed = $json | ConvertFrom-Json
-        $parsed.method | Should Be 'session/prompt'
-        $parsed.params.sessionId | Should Be 'test-session-123'
-        $parsed.params.prompt.Count | Should Be 2
-        $parsed.params.prompt[0].type | Should Be 'text'
+        $parsed.method | Should -Be 'session/prompt'
+        $parsed.params.sessionId | Should -Be 'test-session-123'
+        $parsed.params.prompt.Count | Should -Be 2
+        $parsed.params.prompt[0].type | Should -Be 'text'
     }
 
     It 'Permission denied response has correct structure for Q&A mode' {
@@ -49,7 +51,7 @@ Describe 'ACP Message Building' {
         }
         $json = $msg | ConvertTo-Json -Depth 20 -Compress
         $parsed = $json | ConvertFrom-Json
-        $parsed.result.outcome.outcome | Should Be 'cancelled'
+        $parsed.result.outcome.outcome | Should -Be 'cancelled'
     }
 
     It 'Permission approved response has correct structure for agent mode' {
@@ -60,7 +62,7 @@ Describe 'ACP Message Building' {
         }
         $json = $msg | ConvertTo-Json -Depth 20 -Compress
         $parsed = $json | ConvertFrom-Json
-        $parsed.result.outcome.outcome | Should Be 'approved'
+        $parsed.result.outcome.outcome | Should -Be 'approved'
     }
 }
 
@@ -68,7 +70,7 @@ Describe 'Test-AcpPort' {
     It 'Returns false for a port that is not listening' {
         InModuleScope CopilotTerminal {
             $result = Test-AcpPort -Port 59999
-            $result | Should Be $false
+            $result | Should -Be $false
         }
     }
 }
@@ -77,7 +79,7 @@ Describe 'Connect-AcpServer' {
     It 'Fails gracefully when no server is running' {
         InModuleScope CopilotTerminal {
             $result = Connect-AcpServer -Port 59998 -ErrorAction SilentlyContinue -ErrorVariable connectErr
-            $result | Should Be $false
+            $result | Should -Be $false
         }
     }
 }
@@ -89,7 +91,7 @@ Describe 'Send-AcpPrompt' {
             $script:AcpWriter = $null
 
             $result = Send-AcpPrompt -Prompt 'test' -ErrorAction SilentlyContinue
-            $result | Should Be $null
+            $result | Should -Be $null
         }
     }
 }

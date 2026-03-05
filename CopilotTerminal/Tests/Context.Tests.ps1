@@ -1,26 +1,28 @@
-$modulePath = Join-Path $PSScriptRoot '..' 'CopilotTerminal.psd1'
-Import-Module $modulePath -Force
+BeforeAll {
+    $modulePath = Join-Path $PSScriptRoot '..' 'CopilotTerminal.psd1'
+    Import-Module $modulePath -Force
+}
 
 Describe 'Get-ShellContext' {
     It 'Returns string starting with [ctx]' {
         $result = InModuleScope CopilotTerminal { Get-ShellContext }
-        $result | Should Match '^\[ctx\] '
+        $result | Should -Match '^\[ctx\] '
     }
 
     It 'Always includes cwd' {
         $result = InModuleScope CopilotTerminal { Get-ShellContext }
-        $result | Should Match 'cwd='
+        $result | Should -Match 'cwd='
     }
 
     It 'Includes OS info' {
         $result = InModuleScope CopilotTerminal { Get-ShellContext }
-        $result | Should Match 'os='
-        $result | Should Match 'ps='
+        $result | Should -Match 'os='
+        $result | Should -Match 'ps='
     }
 
     It 'Returns compact key=value format with semicolons' {
         $result = InModuleScope CopilotTerminal { Get-ShellContext }
-        ($result -split ';').Count | Should BeGreaterThan 1
+        ($result -split ';').Count | Should -BeGreaterThan 1
     }
 
     Context 'In a git repository' {
@@ -29,7 +31,7 @@ Describe 'Get-ShellContext' {
             Push-Location $toplevel
             try {
                 $result = InModuleScope CopilotTerminal { Get-ShellContext }
-                $result | Should Match 'git='
+                $result | Should -Match 'git='
             } finally {
                 Pop-Location
             }
@@ -41,8 +43,8 @@ Describe 'Get-ShellContext' {
             Push-Location $TestDrive
             try {
                 $result = InModuleScope CopilotTerminal { Get-ShellContext }
-                $result | Should Not Match 'git='
-                $result | Should Match 'cwd='
+                $result | Should -Not -Match 'git='
+                $result | Should -Match 'cwd='
             } finally {
                 Pop-Location
             }
@@ -62,7 +64,7 @@ Describe 'Get-ShellContext' {
             try {
                 Import-Module (Join-Path $PSScriptRoot '..' 'CopilotTerminal.psd1') -Force
                 $result = InModuleScope CopilotTerminal { Get-ShellContext }
-                $result | Should Not Match 'git='
+                $result | Should -Not -Match 'git='
             } finally {
                 $env:HOME = $origHome
                 Import-Module (Join-Path $PSScriptRoot '..' 'CopilotTerminal.psd1') -Force
