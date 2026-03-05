@@ -62,7 +62,7 @@ function Send-AcpPrompt {
     $responseText = [System.Text.StringBuilder]::new()
     $stopwatch = [System.Diagnostics.Stopwatch]::StartNew()
     $firstTokenTime = $null
-    $timeout = 300000  # 5 minute overall timeout
+    $timeout = 60000  # 1 minute overall timeout
 
     while ($stopwatch.ElapsedMilliseconds -lt $timeout) {
         try {
@@ -152,6 +152,6 @@ function Send-AcpPrompt {
     }
 
     if ($spinner) { Stop-CopilotSpinner -Spinner $spinner; $spinner = $null }
-    Write-Warning "Prompt timed out after 5 minutes."
+    Write-Warning "Prompt timed out after 1 minute."
     return $null
 }
