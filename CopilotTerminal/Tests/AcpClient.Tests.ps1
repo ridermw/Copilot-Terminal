@@ -10,7 +10,7 @@ Describe 'ACP Message Building' {
             id      = 1
             method  = 'initialize'
             params  = @{
-                protocolVersion    = '2025-01'
+                protocolVersion    = 1
                 clientCapabilities = @{}
             }
         }
@@ -19,7 +19,7 @@ Describe 'ACP Message Building' {
         $parsed.jsonrpc | Should -Be '2.0'
         $parsed.id | Should -Be 1
         $parsed.method | Should -Be 'initialize'
-        $parsed.params.protocolVersion | Should -Be '2025-01'
+        $parsed.params.protocolVersion | Should -Be 1
     }
 
     It 'Session prompt message has correct structure' {

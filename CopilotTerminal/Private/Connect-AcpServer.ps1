@@ -37,7 +37,7 @@ function Connect-AcpServer {
         id      = $script:RequestId
         method  = 'initialize'
         params  = @{
-            protocolVersion    = '2025-01'
+            protocolVersion    = 1
             clientCapabilities = @{}
         }
     }
@@ -53,8 +53,8 @@ function Connect-AcpServer {
     # Protocol version check (warn, don't fail)
     if ($initResponse.result -and $initResponse.result.protocolVersion) {
         $serverVersion = $initResponse.result.protocolVersion
-        if ($serverVersion -ne '2025-01') {
-            Write-Warning "ACP protocol version mismatch (server: $serverVersion, expected: 2025-01). Some features may not work. Update CopilotTerminal module."
+        if ($serverVersion -ne 1) {
+            Write-Warning "ACP protocol version mismatch (server: $serverVersion, expected: 1). Some features may not work."
         }
     }
 
@@ -109,7 +109,7 @@ function Repair-AcpConnection {
     $script:RequestId++
     Send-AcpMessage -Message @{
         jsonrpc = '2.0'; id = $script:RequestId; method = 'initialize'
-        params  = @{ protocolVersion = '2025-01'; clientCapabilities = @{} }
+        params  = @{ protocolVersion = 1; clientCapabilities = @{} }
     }
     $initResp = Read-AcpResponse -ExpectedId $script:RequestId
     if (-not $initResp) { return $false }
