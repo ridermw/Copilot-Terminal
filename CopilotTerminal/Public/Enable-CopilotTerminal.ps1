@@ -70,9 +70,10 @@ function Enable-CopilotTerminal {
             $question = $Matches[1]
             [Microsoft.PowerShell.PSConsoleReadLine]::RevertLine()
             [Microsoft.PowerShell.PSConsoleReadLine]::AcceptLine()
-            # ANSI: up 1 line, column 0, clear line — then rewrite prompt + question
+            # ANSI: up 1, col 0, clear — rewrite with yellow trigger to match PSReadLine
             try { $p = prompt } catch { $p = 'PS> ' }
-            [Console]::Write("`e[1A`e[0G`e[2K$p$line`n")
+            $rest = $line.Substring(8)  # after "copilot!"
+            [Console]::Write("`e[1A`e[0G`e[2K$p`e[33mcopilot!`e[0m$rest`n")
             Invoke-CopilotQuery -Question $question -ApproveTools
             return
         }
@@ -82,9 +83,10 @@ function Enable-CopilotTerminal {
             $question = $Matches[1]
             [Microsoft.PowerShell.PSConsoleReadLine]::RevertLine()
             [Microsoft.PowerShell.PSConsoleReadLine]::AcceptLine()
-            # ANSI: up 1 line, column 0, clear line — then rewrite prompt + question
+            # ANSI: up 1, col 0, clear — rewrite with yellow trigger to match PSReadLine
             try { $p = prompt } catch { $p = 'PS> ' }
-            [Console]::Write("`e[1A`e[0G`e[2K$p$line`n")
+            $rest = $line.Substring(8)  # after "copilot:"
+            [Console]::Write("`e[1A`e[0G`e[2K$p`e[33mcopilot:`e[0m$rest`n")
             Invoke-CopilotQuery -Question $question
             return
         }
