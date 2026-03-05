@@ -1,7 +1,18 @@
 function Disable-CopilotTerminal {
     [CmdletBinding()]
     param()
-    # TODO: Implement - removes the PSReadLine AcceptLine handler and restores
-    # default line-accept behaviour
-    Write-Warning "Disable-CopilotTerminal is not yet implemented."
+
+    # Reset block mode state
+    $script:_copilotBlockMode = $false
+    $script:_copilotBlockBuffer = ''
+    $script:_copilotApproveTools = $false
+
+    # Restore default Enter handler
+    try {
+        Set-PSReadLineKeyHandler -Key Enter -Function AcceptLine
+    } catch {
+        Write-Warning "Failed to restore default Enter handler: $_"
+    }
+
+    Write-Verbose "CopilotTerminal disabled. PSReadLine Enter key restored to default."
 }
