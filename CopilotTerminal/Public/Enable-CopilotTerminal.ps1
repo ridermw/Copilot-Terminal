@@ -36,11 +36,10 @@ function Enable-CopilotTerminal {
                 $approveTools = $script:_copilotApproveTools
                 [Microsoft.PowerShell.PSConsoleReadLine]::RevertLine()
                 [Microsoft.PowerShell.PSConsoleReadLine]::AcceptLine()
-                [Console]::WriteLine()
                 if ($approveTools) {
-                    Invoke-CopilotQuery -Question $question -ApproveTools
+                    Invoke-CopilotQuery -Question $question -ApproveTools -Trigger 'copilot! {multiline}'
                 } else {
-                    Invoke-CopilotQuery -Question $question
+                    Invoke-CopilotQuery -Question $question -Trigger 'copilot: {multiline}'
                 }
             } else {
                 # Accumulate block line
@@ -70,11 +69,7 @@ function Enable-CopilotTerminal {
             $question = $Matches[1]
             [Microsoft.PowerShell.PSConsoleReadLine]::RevertLine()
             [Microsoft.PowerShell.PSConsoleReadLine]::AcceptLine()
-            # ANSI: up 1, col 0, clear — rewrite with yellow trigger to match PSReadLine
-            try { $p = prompt } catch { $p = 'PS> ' }
-            $rest = $line.Substring(8)  # after "copilot!"
-            [Console]::Write("`e[1A`e[0G`e[2K$p`e[33mcopilot!`e[0m$rest`n")
-            Invoke-CopilotQuery -Question $question -ApproveTools
+            Invoke-CopilotQuery -Question $question -ApproveTools -Trigger $line
             return
         }
 
@@ -83,11 +78,7 @@ function Enable-CopilotTerminal {
             $question = $Matches[1]
             [Microsoft.PowerShell.PSConsoleReadLine]::RevertLine()
             [Microsoft.PowerShell.PSConsoleReadLine]::AcceptLine()
-            # ANSI: up 1, col 0, clear — rewrite with yellow trigger to match PSReadLine
-            try { $p = prompt } catch { $p = 'PS> ' }
-            $rest = $line.Substring(8)  # after "copilot:"
-            [Console]::Write("`e[1A`e[0G`e[2K$p`e[33mcopilot:`e[0m$rest`n")
-            Invoke-CopilotQuery -Question $question
+            Invoke-CopilotQuery -Question $question -Trigger $line
             return
         }
 
