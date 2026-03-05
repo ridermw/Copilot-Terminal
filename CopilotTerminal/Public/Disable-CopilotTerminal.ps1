@@ -7,6 +7,9 @@ function Disable-CopilotTerminal {
     $script:_copilotBlockBuffer = ''
     $script:_copilotApproveTools = $false
 
+    # Clean up global variable used for scope bridging
+    Remove-Variable -Name '_copilotPendingQuestion' -Scope Global -ErrorAction SilentlyContinue
+
     # Restore default Enter handler
     try {
         Set-PSReadLineKeyHandler -Key Enter -Function AcceptLine
