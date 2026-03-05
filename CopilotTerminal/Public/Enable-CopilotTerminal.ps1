@@ -68,14 +68,11 @@ function Enable-CopilotTerminal {
         # --- Agent mode: copilot! <question> ---
         if ($line -match '^copilot!\s*(.+)$') {
             $question = $Matches[1]
-            $savedTop = [Console]::CursorTop
-            $savedLeft = [Console]::CursorLeft
             [Microsoft.PowerShell.PSConsoleReadLine]::RevertLine()
             [Microsoft.PowerShell.PSConsoleReadLine]::AcceptLine()
-            # Restore the original text on its line
-            [Console]::SetCursorPosition(0, $savedTop)
-            [Console]::Write("copilot! $question")
-            [Console]::WriteLine()
+            # ANSI: up 1 line, column 0, clear line — then rewrite prompt + question
+            try { $p = prompt } catch { $p = 'PS> ' }
+            [Console]::Write("`e[1A`e[0G`e[2K$p$line`n")
             Invoke-CopilotQuery -Question $question -ApproveTools
             return
         }
@@ -83,14 +80,11 @@ function Enable-CopilotTerminal {
         # --- Q&A mode: copilot: <question> ---
         if ($line -match '^copilot:\s*(.+)$') {
             $question = $Matches[1]
-            $savedTop = [Console]::CursorTop
-            $savedLeft = [Console]::CursorLeft
             [Microsoft.PowerShell.PSConsoleReadLine]::RevertLine()
             [Microsoft.PowerShell.PSConsoleReadLine]::AcceptLine()
-            # Restore the original text on its line
-            [Console]::SetCursorPosition(0, $savedTop)
-            [Console]::Write("copilot: $question")
-            [Console]::WriteLine()
+            # ANSI: up 1 line, column 0, clear line — then rewrite prompt + question
+            try { $p = prompt } catch { $p = 'PS> ' }
+            [Console]::Write("`e[1A`e[0G`e[2K$p$line`n")
             Invoke-CopilotQuery -Question $question
             return
         }
