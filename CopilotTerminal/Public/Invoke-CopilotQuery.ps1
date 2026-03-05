@@ -8,15 +8,8 @@ function Invoke-CopilotQuery {
 
         [string]$Model,
 
-        [switch]$ApproveTools,
-
-        [string]$Trigger
+        [switch]$ApproveTools
     )
-
-    # Echo the trigger line so the user sees what they typed
-    if ($Trigger) {
-        Write-Host $Trigger -ForegroundColor DarkYellow
-    }
 
     # Handle empty question — show help
     if (-not $Question -or $Question.Trim() -eq '') {
