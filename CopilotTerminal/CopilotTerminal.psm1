@@ -7,7 +7,6 @@ $script:AcpReader           = $null   # System.IO.StreamReader
 $script:AcpWriter           = $null   # System.IO.StreamWriter
 $script:SessionId            = $null
 $script:RequestId            = 0
-$script:_copilotPendingQuestion = ''
 $script:_copilotBlockMode    = $false
 $script:_copilotBlockBuffer  = ''
 $script:_copilotApproveTools = $false

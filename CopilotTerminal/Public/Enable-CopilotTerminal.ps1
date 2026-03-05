@@ -31,17 +31,18 @@ function Enable-CopilotTerminal {
             if ($line -match '^\s*\}\s*$') {
                 # Block close — submit accumulated prompt
                 $script:_copilotBlockMode = $false
-                $global:_copilotPendingQuestion = $script:_copilotBlockBuffer.Trim()
+                $question = $script:_copilotBlockBuffer.Trim()
                 $script:_copilotBlockBuffer = ''
+                $approveTools = $script:_copilotApproveTools
                 [Microsoft.PowerShell.PSConsoleReadLine]::RevertLine()
-                if ($script:_copilotApproveTools) {
-                    [Microsoft.PowerShell.PSConsoleReadLine]::Insert('Invoke-CopilotQuery -Question $global:_copilotPendingQuestion -ApproveTools')
-                } else {
-                    [Microsoft.PowerShell.PSConsoleReadLine]::Insert('Invoke-CopilotQuery -Question $global:_copilotPendingQuestion')
-                }
                 [Microsoft.PowerShell.PSConsoleReadLine]::AcceptLine()
+                if ($approveTools) {
+                    Invoke-CopilotQuery -Question $question -ApproveTools
+                } else {
+                    Invoke-CopilotQuery -Question $question
+                }
             } else {
-                # Accumulate block line, show continuation prompt
+                # Accumulate block line
                 if ($script:_copilotBlockBuffer) {
                     $script:_copilotBlockBuffer += "`n$line"
                 } else {
@@ -65,27 +66,27 @@ function Enable-CopilotTerminal {
 
         # --- Agent mode: copilot! <question> ---
         if ($line -match '^copilot!\s*(.+)$') {
-            $global:_copilotPendingQuestion = $Matches[1]
+            $question = $Matches[1]
             [Microsoft.PowerShell.PSConsoleReadLine]::RevertLine()
-            [Microsoft.PowerShell.PSConsoleReadLine]::Insert('Invoke-CopilotQuery -Question $global:_copilotPendingQuestion -ApproveTools')
             [Microsoft.PowerShell.PSConsoleReadLine]::AcceptLine()
+            Invoke-CopilotQuery -Question $question -ApproveTools
             return
         }
 
         # --- Q&A mode: copilot: <question> ---
         if ($line -match '^copilot:\s*(.+)$') {
-            $global:_copilotPendingQuestion = $Matches[1]
+            $question = $Matches[1]
             [Microsoft.PowerShell.PSConsoleReadLine]::RevertLine()
-            [Microsoft.PowerShell.PSConsoleReadLine]::Insert('Invoke-CopilotQuery -Question $global:_copilotPendingQuestion')
             [Microsoft.PowerShell.PSConsoleReadLine]::AcceptLine()
+            Invoke-CopilotQuery -Question $question
             return
         }
 
-        # --- Empty copilot: or copilot! → show help ---
+        # --- Empty copilot: or copilot! → help ---
         if ($line -match '^copilot[\:\!]\s*$') {
             [Microsoft.PowerShell.PSConsoleReadLine]::RevertLine()
-            [Microsoft.PowerShell.PSConsoleReadLine]::Insert('Invoke-CopilotQuery -Question ""')
             [Microsoft.PowerShell.PSConsoleReadLine]::AcceptLine()
+            Invoke-CopilotQuery -Question ''
             return
         }
 
