@@ -94,5 +94,12 @@ function Enable-CopilotTerminal {
         [Microsoft.PowerShell.PSConsoleReadLine]::AcceptLine()
     }
 
-    Write-Verbose "CopilotTerminal enabled. Type 'copilot: <question>' to ask, 'copilot! <command>' for agent mode."
+    Write-Host ""
+    Write-Host "  ✅ CopilotTerminal enabled" -ForegroundColor Green
+    Write-Host ""
+    Write-Host "  Triggers:" -ForegroundColor DarkGray
+    Write-Host "    copilot: <question>   Q&A mode" -ForegroundColor DarkGray
+    Write-Host "    copilot! <command>    Agent mode" -ForegroundColor DarkGray
+    Write-Host "    copilot: {            Multiline block" -ForegroundColor DarkGray
+    Write-Host ""
 }

@@ -36,11 +36,16 @@ function Send-AcpPrompt {
         }
     }
 
+    # Start spinner before sending prompt
+    $spinner = Start-CopilotSpinner
+
     try {
         Send-AcpMessage -Message $promptRequest
     } catch {
+        if ($spinner) { Stop-CopilotSpinner -Spinner $spinner; $spinner = $null }
         Write-Warning "`u{26A0} Connection to Copilot lost while sending. Attempting reconnect..."
         if (Repair-AcpConnection) {
+            $spinner = Start-CopilotSpinner
             $promptRequest.params.sessionId = $script:SessionId
             $script:RequestId++
             $promptRequest.id = $script:RequestId
@@ -99,6 +104,7 @@ function Send-AcpPrompt {
                     if ($update.sessionUpdate -eq 'agent_message_chunk' -and $update.content -and $update.content.type -eq 'text') {
                         if (-not $firstTokenTime) {
                             $firstTokenTime = $stopwatch.ElapsedMilliseconds
+                            if ($spinner) { Stop-CopilotSpinner -Spinner $spinner; $spinner = $null }
                         }
                         $chunk = $update.content.text
                         [void]$responseText.Append($chunk)
@@ -129,6 +135,7 @@ function Send-AcpPrompt {
             }
         } catch {
             # Connection lost mid-stream
+            if ($spinner) { Stop-CopilotSpinner -Spinner $spinner; $spinner = $null }
             if ($responseText.Length -gt 0) {
                 Write-Host ""
                 Write-Warning "`u{26A0} Connection to Copilot lost - partial response above."
@@ -144,6 +151,7 @@ function Send-AcpPrompt {
         }
     }
 
+    if ($spinner) { Stop-CopilotSpinner -Spinner $spinner; $spinner = $null }
     Write-Warning "Prompt timed out after 5 minutes."
     return $null
 }

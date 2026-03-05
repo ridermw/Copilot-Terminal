@@ -14,5 +14,7 @@ function Disable-CopilotTerminal {
         Write-Warning "Failed to restore default Enter handler: $_"
     }
 
-    Write-Verbose "CopilotTerminal disabled. PSReadLine Enter key restored to default."
+    Write-Host ""
+    Write-Host "  ⏹ CopilotTerminal disabled" -ForegroundColor Yellow
+    Write-Host ""
 }
