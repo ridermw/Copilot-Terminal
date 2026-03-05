@@ -37,8 +37,10 @@ function Enable-CopilotTerminal {
                 [Microsoft.PowerShell.PSConsoleReadLine]::RevertLine()
                 [Microsoft.PowerShell.PSConsoleReadLine]::AcceptLine()
                 if ($approveTools) {
+                    Write-Host "  copilot! {multiline}" -ForegroundColor Red
                     Invoke-CopilotQuery -Question $question -ApproveTools
                 } else {
+                    Write-Host "  copilot: {multiline}" -ForegroundColor Magenta
                     Invoke-CopilotQuery -Question $question
                 }
             } else {
@@ -69,6 +71,7 @@ function Enable-CopilotTerminal {
             $question = $Matches[1]
             [Microsoft.PowerShell.PSConsoleReadLine]::RevertLine()
             [Microsoft.PowerShell.PSConsoleReadLine]::AcceptLine()
+            Write-Host "  copilot! $question" -ForegroundColor Red
             Invoke-CopilotQuery -Question $question -ApproveTools
             return
         }
@@ -78,6 +81,7 @@ function Enable-CopilotTerminal {
             $question = $Matches[1]
             [Microsoft.PowerShell.PSConsoleReadLine]::RevertLine()
             [Microsoft.PowerShell.PSConsoleReadLine]::AcceptLine()
+            Write-Host "  copilot: $question" -ForegroundColor Magenta
             Invoke-CopilotQuery -Question $question
             return
         }
