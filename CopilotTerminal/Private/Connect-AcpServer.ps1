@@ -50,6 +50,14 @@ function Connect-AcpServer {
         return $false
     }
 
+    # Surface error responses from the server
+    if ($initResponse.ContainsKey('error')) {
+        $errCode = $initResponse.error.code
+        $errMsg  = $initResponse.error.message
+        Write-Error "ACP initialize failed (code $errCode): $errMsg"
+        return $false
+    }
+
     # Protocol version check (warn, don't fail)
     if ($initResponse.result -and $initResponse.result.protocolVersion) {
         $serverVersion = $initResponse.result.protocolVersion
@@ -73,8 +81,18 @@ function Connect-AcpServer {
 
     # Read session/new response
     $sessionResponse = Read-AcpResponse -ExpectedId $script:RequestId
-    if (-not $sessionResponse -or -not $sessionResponse.result) {
-        Write-Error "Failed to create ACP session."
+    if (-not $sessionResponse) {
+        Write-Error "No response from ACP server during session/new."
+        return $false
+    }
+    if ($sessionResponse.ContainsKey('error')) {
+        $errCode = $sessionResponse.error.code
+        $errMsg  = $sessionResponse.error.message
+        Write-Error "ACP session/new failed (code $errCode): $errMsg"
+        return $false
+    }
+    if (-not $sessionResponse.result) {
+        Write-Error "Failed to create ACP session (no result in response)."
         return $false
     }
 
@@ -113,6 +131,10 @@ function Repair-AcpConnection {
     }
     $initResp = Read-AcpResponse -ExpectedId $script:RequestId
     if (-not $initResp) { return $false }
+    if ($initResp.ContainsKey('error')) {
+        Write-Warning "ACP re-initialize failed: $($initResp.error.message)"
+        return $false
+    }
 
     # Try to resume old session
     if ($oldSessionId) {

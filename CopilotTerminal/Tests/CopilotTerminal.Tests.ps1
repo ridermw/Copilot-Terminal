@@ -63,6 +63,40 @@ Describe 'CopilotTerminal Module' {
         }
     }
 
+    Context 'Trigger Patterns' {
+        It 'Q&A mode regex matches copilot: prefix' {
+            'copilot: how do I list files?' -match '^copilot:\s*(.+)$' | Should -BeTrue
+            $Matches[1] | Should -Be 'how do I list files?'
+        }
+
+        It 'Agent mode regex matches copilot! prefix' {
+            'copilot! fix the bug' -match '^copilot!\s*(.+)$' | Should -BeTrue
+            $Matches[1] | Should -Be 'fix the bug'
+        }
+
+        It 'Block mode regex matches copilot: {' {
+            'copilot: {' -match '^copilot([\:\!])\s*\{\s*$' | Should -BeTrue
+            $Matches[1] | Should -Be ':'
+        }
+
+        It 'Block mode regex matches copilot! {' {
+            'copilot! {' -match '^copilot([\:\!])\s*\{\s*$' | Should -BeTrue
+            $Matches[1] | Should -Be '!'
+        }
+
+        It 'Empty copilot: matches help pattern' {
+            'copilot:' -match '^copilot[\:\!]\s*$' | Should -BeTrue
+        }
+
+        It 'Empty copilot! matches help pattern' {
+            'copilot!' -match '^copilot[\:\!]\s*$' | Should -BeTrue
+        }
+
+        It 'Normal commands do not match copilot patterns' {
+            'Get-ChildItem' -match '^copilot[\:\!]' | Should -BeFalse
+        }
+    }
+
     Context 'Invoke-CopilotQuery Parameters' {
         It 'Has Question parameter' {
             $cmd = Get-Command 'Invoke-CopilotQuery' -Module CopilotTerminal
